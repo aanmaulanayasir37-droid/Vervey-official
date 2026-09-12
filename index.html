@@ -220,6 +220,9 @@
   <!-- Main Container -->
   <main class="container">
 
+    <!-- Main Container -->
+  <main class="container">
+
     <!-- TAB 1: MENU UTAMA -->
     <section id="view-index">
       <h2 class="page-title">MENU UTAMA ELCIDA</h2>
@@ -465,7 +468,7 @@
     </div>
   </div>
 
-  <!-- MODAL GANTI ROLE -->
+    <!-- MODAL GANTI ROLE -->
   <div class="custom-modal" id="changeRoleModal">
     <div class="pass-modal-header">
       <div class="lock-icon" style="color: #c084fc;"><i class="fa-solid fa-user-gear"></i></div>
@@ -526,7 +529,7 @@
     <button class="btn-submit" style="width:100%;" onclick="closeAllModals()">OK</button>
   </div>
 
-  <!-- MODAL KTA -->
+  <!-- MODAL KTA (DIPROTEKSI LOGIN DISCORD) -->
   <div class="kta-modal-wrapper" id="ktaModal">
     <div class="kta-card">
       <div class="kta-header">
@@ -625,13 +628,32 @@
 
   <script>
     // ==========================================
-    // CONFIG DISCORD OAUTH2
+    // GENERATOR NIK DARI USER ID / DISCORD ID
     // ==========================================
-    const DISCORD_CLIENT_ID = "1548214716868988961"; // Ganti dengan Client ID milikmu
-    const DISCORD_REDIRECT_URI = "https://aanmaulanayasir37-droid.github.io/Vervey-official/"; // Otomatis URL websitemu saat ini
+    function generateNIK(idString) {
+      if (!idString) return "ELC-000000";
+      let hash = 0;
+      for (let i = 0; i < idString.length; i++) {
+        hash = (hash << 5) - hash + idString.charCodeAt(i);
+        hash |= 0;
+      }
+      const positiveHash = Math.abs(hash) % 1000000;
+      return `ELC-${String(positiveHash).padStart(6, '0')}`;
+    }
 
     // ==========================================
-    // 1. VARIABLE GLOBAL & PERSISTENSI DATA
+    // CONFIG DISCORD OAUTH2
+    // ==========================================
+    const DISCORD_CLIENT_ID = "1548214716868988961"; // Ganti Client ID milikmu di sini
+    const DISCORD_REDIRECT_URI = "https://aanmaulanayasir37-droid.github.io/Vervey-official/";
+
+    // Cek Status Login Discord
+    function isDiscordLoggedIn() {
+      return localStorage.getItem('elcida_discord_user') !== null;
+    }
+
+    // ==========================================
+    // VARIABLE GLOBAL & PERSISTENSI DATA
     // ==========================================
     let DEV_PASSWORD = localStorage.getItem('elcida_dev_pass') || "verveyadmin";
     let isMaintenance = localStorage.getItem('elcida_maintenance') === 'true';
@@ -639,7 +661,7 @@
 
     let currentUserId = localStorage.getItem('elcida_user_id');
     if (!currentUserId) {
-      currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('elcida_user_id', currentUserId);
     }
 
@@ -685,7 +707,6 @@
     }
 
     function checkDiscordCallback() {
-      // Menangkap Implicit Grant Access Token dari URL Fragment (#access_token=...)
       const fragment = new URLSearchParams(window.location.hash.slice(1));
       const accessToken = fragment.get('access_token');
 
@@ -703,21 +724,18 @@
               ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
               : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
-            // Simpan profil Discord ke LocalStorage
             localStorage.setItem('elcida_profile_name', discordUsername);
             localStorage.setItem('elcida_profile_avatar', discordAvatar);
             localStorage.setItem('elcida_discord_user', JSON.stringify(userData));
 
             document.getElementById('profileName').innerText = discordUsername;
             document.getElementById('avatarBox').innerHTML = `<img src="${discordAvatar}" alt="Foto Profil">`;
-            document.getElementById('profileNik').innerText = `DISCORD-${userData.id.slice(-6)}`;
+            document.getElementById('profileNik').innerText = generateNIK(userData.id);
 
             addLog(`Login Discord Berhasil: ${discordUsername}`);
             showNotice("LOGIN DISCORD BERHASIL", `Selamat datang kembali, ${discordUsername}!`);
 
-            // Bersihkan token dari URL bar
             window.history.replaceState({}, document.title, window.location.pathname);
-            
             updateDiscordUI(true);
           }
         })
@@ -728,7 +746,11 @@
       } else {
         const savedDiscordUser = localStorage.getItem('elcida_discord_user');
         if (savedDiscordUser) {
+          const userData = JSON.parse(savedDiscordUser);
+          document.getElementById('profileNik').innerText = generateNIK(userData.id);
           updateDiscordUI(true);
+        } else {
+          document.getElementById('profileNik').innerText = generateNIK(currentUserId);
         }
       }
     }
@@ -757,7 +779,8 @@
           <circle cx="50" cy="40" r="20" fill="#555"/>
           <path d="M20 90 C20 65, 80 65, 80 90 Z" fill="#555"/>
         </svg>`;
-      document.getElementById('profileNik').innerText = "ELC-000000";
+      
+      document.getElementById('profileNik').innerText = generateNIK(currentUserId);
 
       updateDiscordUI(false);
       addLog("User berhasil Logout dari Discord");
@@ -765,8 +788,83 @@
     }
 
     // ==========================================
-    // 2. LOGGING & UTILITY FUNCTIONS
+    // NAVIGASI, MODAL & UTILITY FUNCTIONS
     // ==========================================
+    function switchTab(tabId) {
+      const tabs = ['index', 'beranda', 'galeri', 'cerita', 'developer'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        const sideBtn = document.getElementById(`side-${t}`);
+
+        if (view) view.classList.add('hidden');
+        if (navBtn) navBtn.classList.remove('active');
+        if (sideBtn) sideBtn.classList.remove('active');
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      const activeSide = document.getElementById(`side-${tabId}`);
+
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) activeNav.classList.add('active');
+      if (activeSide) activeSide.classList.add('active');
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    function closeAllModals() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.querySelectorAll('.kta-modal-wrapper, .form-modal-wrapper, .custom-modal').forEach(m => m.classList.remove('active'));
+    }
+
+    /* PROTEKSI FITUR KTA DENGAN DISCORD LOGIN */
+    function openKtaModal() {
+      if (!isDiscordLoggedIn()) {
+        showNotice("AKSES DITOLAK", "Kamu harus login Discord terlebih dahulu untuk melihat Kartu Tanda Anggota (KTA)!", false);
+        return;
+      }
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('ktaModal').classList.add('active');
+    }
+
+    function openFormModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('formModal').classList.add('active');
+      toggleFormFields();
+    }
+
+    function toggleFormFields() {
+      const type = document.getElementById('input-type').value;
+      const catSelect = document.getElementById('input-category');
+      const groupImg = document.getElementById('group-image-url');
+
+      catSelect.innerHTML = '';
+      if (type === 'cerita') {
+        catSelect.innerHTML = `
+          <option value="Cerpen">Cerpen</option>
+          <option value="Puisi">Puisi</option>
+          <option value="Catatan">Catatan</option>
+        `;
+        groupImg.classList.add('hidden');
+      } else {
+        catSelect.innerHTML = `
+          <option value="Ilustrasi">Ilustrasi</option>
+          <option value="Fanart">Fanart</option>
+          <option value="Komik">Komik</option>
+          <option value="Lainnya">Lainnya</option>
+        `;
+        groupImg.classList.remove('hidden');
+      }
+    }
+
     function addLog(msg) {
       const time = new Date().toLocaleTimeString('id-ID');
       const logEntry = `[${time}] ${msg}`;
@@ -798,8 +896,44 @@
       document.getElementById('noticeDesc').innerText = desc;
     }
 
+    function editName() {
+      const newName = prompt("Masukkan Nama Baru:", document.getElementById('profileName').innerText);
+      if (newName && newName.trim() !== "") {
+        const trimmed = newName.trim();
+        document.getElementById('profileName').innerText = trimmed;
+        localStorage.setItem('elcida_profile_name', trimmed);
+        addLog(`Nama pengguna diubah menjadi: ${trimmed}`);
+      }
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('avatarBox').innerHTML = `<img src="${e.target.result}" alt="Foto Profil">`;
+          localStorage.setItem('elcida_profile_avatar', e.target.result);
+          addLog("Foto profil berhasil diperbarui");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedBase64Image = e.target.result;
+          document.getElementById('image-preview').src = uploadedBase64Image;
+          document.getElementById('image-preview-container').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
     // ==========================================
-    // 3. MAINTENANCE & AUTH DEVELOPER CONTROL
+    // MAINTENANCE & AUTH DEVELOPER CONTROL
     // ==========================================
     function checkMaintenance() {
       const screen = document.getElementById('maintenance-screen');
@@ -904,7 +1038,7 @@
     }
 
     // ==========================================
-    // 4. EXPORT, IMPORT & RESET SYSTEM
+    // EXPORT, IMPORT & RESET SYSTEM
     // ==========================================
     function openExportModal() {
       closeAllModals();
@@ -930,31 +1064,21 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const data = JSON.parse(e.target.result);
-          if (data.gallery || data.stories) {
-            galleryData = data.gallery || [];
-            storyData = data.stories || [];
-            if(data.badges) {
-              myActiveBadges = data.badges;
-              localStorage.setItem('elcida_my_badges', JSON.stringify(myActiveBadges));
-            }
-            if(data.logs) {
-              logData = data.logs;
-              localStorage.setItem('elcida_logs', JSON.stringify(logData));
-            }
-            localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
-            localStorage.setItem('elcida_stories', JSON.stringify(storyData));
-            renderGallery();
-            renderStories();
-            renderKtaBadges();
-            updateDevStats();
-            renderDatabaseTable();
-            renderLogs();
-            addLog("Database berhasil dipulihkan via Import");
-            showNotice("IMPORT SUKSES", "Database berhasil dipulihkan.");
-          }
+          const imported = JSON.parse(e.target.result);
+          if (imported.gallery) { galleryData = imported.gallery; localStorage.setItem('elcida_gallery', JSON.stringify(galleryData)); }
+          if (imported.stories) { storyData = imported.stories; localStorage.setItem('elcida_stories', JSON.stringify(storyData)); }
+          if (imported.badges) { myActiveBadges = imported.badges; localStorage.setItem('elcida_my_badges', JSON.stringify(myActiveBadges)); }
+          
+          addLog("Import data sistem berhasil");
+          renderGallery();
+          renderStories();
+          renderKtaBadges();
+          renderBadgeSelector();
+          updateDevStats();
+          renderDatabaseTable();
+          showNotice("IMPORT BERHASIL", "Data sistem berhasil diperbarui dari file JSON!");
         } catch (err) {
-          showNotice("ERROR FILE", "File JSON korup.", false);
+          showNotice("ERROR", "File JSON tidak valid!", false);
         }
       };
       reader.readAsText(file);
@@ -967,217 +1091,103 @@
     }
 
     function confirmResetSystemData() {
-      localStorage.removeItem('elcida_gallery');
-      localStorage.removeItem('elcida_stories');
-      localStorage.removeItem('elcida_logs');
+      localStorage.clear();
       galleryData = [];
       storyData = [];
-      logData = [`[${new Date().toLocaleTimeString('id-ID')}] System Reset Completed.`];
-      localStorage.setItem('elcida_logs', JSON.stringify(logData));
-      renderGallery();
-      renderStories();
-      updateDevStats();
-      renderDatabaseTable();
-      renderLogs();
-      showNotice("RESET BERHASIL", "Seluruh data galeri & cerita dibersihkan.");
+      logData = [];
+      myActiveBadges = ['verified'];
+
+      addLog("Sistem di-reset total ke pengaturan pabrik");
+      location.reload();
     }
 
-    // ==========================================
-    // 5. DATABASE INSPECTOR & STATS
-    // ==========================================
     function updateDevStats() {
+      let totalLikes = 0;
+      galleryData.forEach(item => totalLikes += (item.likes || 0));
+      storyData.forEach(item => totalLikes += (item.likes || 0));
+
       document.getElementById('stat-gallery').innerText = galleryData.length;
       document.getElementById('stat-stories').innerText = storyData.length;
       document.getElementById('stat-visits').innerText = visitCount;
-
-      let totalLikes = 0;
-      galleryData.forEach(i => totalLikes += (i.likes || 0));
-      storyData.forEach(i => totalLikes += (i.likes || 0));
       document.getElementById('stat-likes').innerText = totalLikes;
-                                                              }
+    }
 
     function renderDatabaseTable() {
       const tbody = document.getElementById('db-table-body');
-      tbody.innerHTML = '';
+      let html = '';
 
-      galleryData.forEach((item, index) => {
-        tbody.innerHTML += `<tr><td>[Galeri]</td><td>${item.title}</td><td>${item.author}</td><td><button class="btn-del-sm" onclick="deleteSingleItem('galeri', ${index})">Hapus</button></td></tr>`;
+      galleryData.forEach(item => {
+        html += `
+          <tr>
+            <td><span style="color:#60a5fa;">[Galeri]</span></td>
+            <td>${item.title}</td>
+            <td>${item.author}</td>
+            <td><button class="btn-del-sm" onclick="deleteItem('galeri', ${item.id})">Hapus</button></td>
+          </tr>
+        `;
       });
 
-      storyData.forEach((item, index) => {
-        tbody.innerHTML += `<tr><td>[Cerita]</td><td>${item.title}</td><td>${item.author}</td><td><button class="btn-del-sm" onclick="deleteSingleItem('cerita', ${index})">Hapus</button></td></tr>`;
+      storyData.forEach(item => {
+        html += `
+          <tr>
+            <td><span style="color:#4ade80;">[Cerita]</span></td>
+            <td>${item.title}</td>
+            <td>${item.author}</td>
+            <td><button class="btn-del-sm" onclick="deleteItem('cerita', ${item.id})">Hapus</button></td>
+          </tr>
+        `;
       });
+
+      if (!html) html = `<tr><td colspan="4" style="text-align:center; color:#666;">Database kosong</td></tr>`;
+      tbody.innerHTML = html;
     }
 
-    function deleteSingleItem(type, index) {
+    function deleteItem(type, id) {
       if (type === 'galeri') {
-        const deletedTitle = galleryData[index].title;
-        galleryData.splice(index, 1);
+        galleryData = galleryData.filter(x => x.id !== id);
         localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
-        addLog(`Item galeri "${deletedTitle}" dihapus`);
         renderGallery();
       } else {
-        const deletedTitle = storyData[index].title;
-        storyData.splice(index, 1);
+        storyData = storyData.filter(x => x.id !== id);
         localStorage.setItem('elcida_stories', JSON.stringify(storyData));
-        addLog(`Item cerita "${deletedTitle}" dihapus`);
         renderStories();
       }
-      updateDevStats();
+      addLog(`Item ${type} #${id} dihapus dari database`);
       renderDatabaseTable();
+      updateDevStats();
     }
 
     // ==========================================
-    // 6. UI & NAVIGATION CONTROL
+    // BADGE SYSTEM MANAGEMENT
     // ==========================================
-    function switchTab(tabName) {
-      const tabs = ['index', 'beranda', 'galeri', 'cerita', 'developer'];
-      tabs.forEach(tab => {
-        const view = document.getElementById(`view-${tab}`);
-        const navBtn = document.getElementById(`nav-${tab}`);
-        const sideBtn = document.getElementById(`side-${tab}`);
+    function renderKtaBadges() {
+      const container = document.getElementById('ktaBadgeContainer');
+      const badgesHTML = generateBadgesHTML(myActiveBadges);
+      container.innerHTML = badgesHTML || `<span style="font-size:10px; color:#555;">Belum ada lencana dipilih</span>`;
+    }
 
-        if (tab === tabName) {
-          if (view) view.classList.remove('hidden');
-          if (navBtn) navBtn.classList.add('active');
-          if (sideBtn) sideBtn.classList.add('active');
-        } else {
-          if (view) view.classList.add('hidden');
-          if (navBtn) navBtn.classList.remove('active');
-          if (sideBtn) sideBtn.classList.remove('active');
+    function generateBadgesHTML(badgeIds) {
+      return badgeIds.map(bId => {
+        const b = ALL_BADGES.find(x => x.id === bId);
+        if (b && isBadgeUnlocked(b)) {
+          return `<span class="badge-item ${b.class}" title="${b.title}"><i class="${b.icon}"></i> ${b.name}</span>`;
         }
-      });
-    }
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('active');
-      document.getElementById('sidebarOverlay').classList.toggle('active');
-    }
-
-    function openFormModal() {
-      closeAllModals();
-      document.getElementById('modalOverlay').classList.add('active');
-      document.getElementById('formModal').classList.add('active');
-      document.getElementById('input-author').value = document.getElementById('profileName').innerText;
-      toggleFormFields();
-    }
-
-    function openKtaModal() {
-      closeAllModals();
-      document.getElementById('modalOverlay').classList.add('active');
-      document.getElementById('ktaModal').classList.add('active');
-      renderKtaBadges();
-      renderBadgeSelector();
-    }
-
-    function closeAllModals() {
-      document.getElementById('modalOverlay').classList.remove('active');
-      document.getElementById('formModal').classList.remove('active');
-      document.getElementById('ktaModal').classList.remove('active');
-      document.getElementById('passModal').classList.remove('active');
-      document.getElementById('changePassModal').classList.remove('active');
-      document.getElementById('changeRoleModal').classList.remove('active');
-      document.getElementById('exportModal').classList.remove('active');
-      document.getElementById('resetModal').classList.remove('active');
-      document.getElementById('noticeModal').classList.remove('active');
-
-      if (isMaintenance && document.getElementById('view-developer').classList.contains('hidden')) {
-        checkMaintenance();
-      }
-    }
-
-    function toggleFormFields() {
-      const type = document.getElementById('input-type').value;
-      const groupImg = document.getElementById('group-image-url');
-      const catSelect = document.getElementById('input-category');
-
-      if (type === 'galeri') {
-        groupImg.classList.remove('hidden');
-        catSelect.innerHTML = `<option value="Ilustrasi">Ilustrasi</option><option value="Fanart">Fanart</option><option value="Komik">Komik</option><option value="Lainnya">Lainnya</option>`;
-      } else {
-        groupImg.classList.add('hidden');
-        catSelect.innerHTML = `<option value="Cerpen">Cerpen</option><option value="Puisi">Puisi</option><option value="Catatan">Catatan</option>`;
-      }
-    }
-
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img, 0, 0);
-
-            const fontSize = Math.max(16, Math.floor(img.width / 25));
-            ctx.font = `bold ${fontSize}px sans-serif`;
-            ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-            ctx.textAlign = "right";
-            ctx.fillText("ELCIDA GALLERY", img.width - 20, img.height - 20);
-
-            uploadedBase64Image = canvas.toDataURL('image/jpeg', 0.85);
-            document.getElementById('image-preview').src = uploadedBase64Image;
-            document.getElementById('image-preview-container').style.display = 'block';
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function editName() {
-      const current = document.getElementById('profileName').innerText;
-      const newName = prompt('Ubah Nama Profil:', current);
-      if (newName) {
-        document.getElementById('profileName').innerText = newName;
-        localStorage.setItem('elcida_profile_name', newName);
-        addLog(`Nama Profil diubah ke ${newName}`);
-      }
-    }
-
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('avatarBox').innerHTML = `<img src="${e.target.result}" alt="Foto Profil">`;
-          localStorage.setItem('elcida_profile_avatar', e.target.result);
-          addLog("Foto Profil KTA diperbarui");
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function generateBadgesHTML(badgeIdList) {
-      if (!badgeIdList || badgeIdList.length === 0) return '';
-      return badgeIdList.map(id => {
-        const b = ALL_BADGES.find(x => x.id === id);
-        if (!b) return '';
-        return `<span class="badge-item ${b.class}" title="${b.title}"><i class="${b.icon}"></i> ${b.name}</span>`;
+        return '';
       }).join('');
     }
 
-    function renderKtaBadges() {
-      const container = document.getElementById('ktaBadgeContainer');
-      container.innerHTML = generateBadgesHTML(myActiveBadges);
-    }
-
     function toggleBadgeDropdown() {
-      isBadgeDropdownOpen = !isBadgeDropdownOpen;
       const grid = document.getElementById('badgeSelectGrid');
-      const arrow = document.getElementById('badgeArrowIcon');
+      const icon = document.getElementById('badgeArrowIcon');
+      isBadgeDropdownOpen = !isBadgeDropdownOpen;
 
       if (isBadgeDropdownOpen) {
         grid.classList.remove('hidden');
-        arrow.className = 'fa-solid fa-chevron-up';
+        icon.className = 'fa-solid fa-chevron-up';
+        renderBadgeSelector();
       } else {
         grid.classList.add('hidden');
-        arrow.className = 'fa-solid fa-chevron-down';
+        icon.className = 'fa-solid fa-chevron-down';
       }
     }
 
@@ -1219,7 +1229,7 @@
     }
 
     // ==========================================
-    // 7. PUBLIKASI KARYA & INTERAKSI
+    // PUBLIKASI KARYA & INTERAKSI
     // ==========================================
     function submitWork() {
       const type = document.getElementById('input-type').value;
@@ -1433,7 +1443,7 @@
     }
 
     // ==========================================
-    // 8. INITIALIZATION AT LAUNCH
+    // INITIALIZATION AT LAUNCH
     // ==========================================
     window.onload = function() {
       checkMaintenance();
