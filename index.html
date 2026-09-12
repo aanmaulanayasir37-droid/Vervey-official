@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elcida - Galeri & Cerita</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: #050505; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; background-image: url('background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; padding-bottom: 50px; }
+
+    @keyframes fadeInSlide {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    main section { animation: fadeInSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .menu-card, .gallery-card, .card, .dev-stat-card, .banner { animation: fadeInSlide 0.5s ease both; transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease; }
+
+    /* Header */
+    header { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; gap: 8px; }
+    .header-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .menu-toggle { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 4px; }
+    header h1 { color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; border-left: 2px solid #fff; padding-left: 8px; white-space: nowrap; }
+    .header-right { overflow-x: auto; max-width: 65%; scrollbar-width: none; }
+    .header-right::-webkit-scrollbar { display: none; }
+    nav.top-nav { display: flex; gap: 4px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15); padding: 3px 4px; border-radius: 8px; white-space: nowrap; }
+    nav.top-nav button { color: #aaa; background: transparent; border: none; font-size: 10px; font-weight: 600; white-space: nowrap; transition: all 0.2s; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
+    nav.top-nav button:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+    nav.top-nav button.active { color: #000; background: #ffffff; font-weight: bold; }
+
+    /* Layout & Controls */
+    .container { padding: 24px 16px; max-width: 850px; margin: 0 auto; width: 100%; flex: 1; position: relative; z-index: 1; }
+    .page-title { font-size: 16px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 20px; text-transform: uppercase; color: #fff; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    
+    .filter-container { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 200px; position: relative; }
+    .search-box input { width: 100%; padding: 8px 12px 8px 32px; background: rgba(18, 18, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; font-size: 12px; outline: none; }
+    .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 12px; }
+    .category-select { background: rgba(18, 18, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; border-radius: 8px; padding: 0 10px; font-size: 12px; outline: none; }
+
+    .banner { background: rgba(18, 18, 20, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .banner-content { max-width: 500px; }
+    .banner-content h2 { font-size: 1.2rem; color: #fff; margin-bottom: 6px; }
+    .banner-content p { color: #aaa; font-size: 0.85rem; line-height: 1.4; }
+    .btn-primary { background-color: #ffffff; color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: #dcdcdc; }
+
+    /* Buttons khusus Discord */
+    .btn-discord { background-color: #5865F2; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; width: 100%; margin-top: 8px; }
+    .btn-discord:hover { background-color: #4752C4; }
+
+    /* Cards */
+    .menu-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .menu-card { background: rgba(18, 18, 20, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 18px 20px; color: #fff; display: flex; align-items: center; gap: 16px; cursor: pointer; }
+    .menu-icon { font-size: 22px; width: 44px; height: 44px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .menu-info h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .menu-info p { font-size: 11px; color: #aaa; }
+
+    .grid-container { display: flex; flex-direction: column; gap: 16px; }
+    .grid-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: rgba(18, 18, 20, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+    .gallery-card { background: rgba(18, 18, 20, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; }
+    .gallery-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+    .card-title { font-size: 1rem; color: #fff; margin-bottom: 6px; }
+    .publisher-info { font-size: 0.78rem; color: #888; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .publisher-info .author-name { color: #fff; font-weight: 600; }
+    .badge-role { background: rgba(255, 255, 255, 0.08); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.2); padding: 2px 7px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
+    .badge-cat { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 7px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .card-body { color: #bbb; font-size: 0.88rem; line-height: 1.5; margin-bottom: 12px; }
+
+    /* Card Action Toolbar & Like Active State */
+    .card-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; margin-top: auto; font-size: 11px; color: #aaa; }
+    .action-group { display: flex; gap: 12px; align-items: center; }
+    .btn-action { background: none; border: none; color: #aaa; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+    .btn-action:hover { color: #fff; }
+    .btn-action.liked { color: #ef4444; }
+    .btn-action.liked i { color: #ef4444; }
+
+    /* Badges System */
+    .badge-wrapper { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; margin-bottom: 6px; }
+    .badge-item { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; color: #fff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; user-select: none; }
+    .badge-item:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
+
+    .badge-dev { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: 1px solid #73e6ff; text-shadow: 0 0 3px rgba(0,242,254,0.6); animation: pulse-glow 2s infinite alternate; }
+    .badge-admin-like { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); border: 1px solid #ff7b93; text-shadow: 0 0 3px rgba(255,8,68,0.6); }
+    .badge-vip { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); color: #3d2b00; font-weight: 800; }
+    .badge-bug-hunter { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .badge-sultan-like { background: linear-gradient(135deg, #ff4e50, #f9d423); }
+    .badge-top-commenter { background: linear-gradient(135deg, #a8c0ff, #3f2b96); }
+    .badge-streak { background: linear-gradient(135deg, #ff9900, #ff5500); }
+    .badge-early-bird { background: linear-gradient(135deg, #f857a6, #ff5858); }
+    .badge-creator-pro { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
+    .badge-verified { background: #1da1f2; }
+
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 4px rgba(0, 242, 254, 0.4); }
+      100% { box-shadow: 0 0 10px rgba(0, 242, 254, 0.9); }
+    }
+
+    /* Dev Room Styles */
+    .dev-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .dev-stat-card { background: rgba(10, 10, 12, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 14px; text-align: center; }
+    .dev-stat-number { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .dev-stat-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .dev-action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+    .btn-dev-action { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-dev-danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171; grid-column: span 2; }
+
+    /* Switches */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 22px; border: 1px solid rgba(255,255,255,0.2); }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: #ef4444; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* Table & Terminal */
+    .db-table-wrapper { overflow-x: auto; margin-top: 10px; max-height: 200px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
+    .db-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+    .db-table th { background: rgba(255,255,255,0.08); color: #888; padding: 8px; font-weight: 600; }
+    .db-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #ddd; white-space: nowrap; }
+    .btn-del-sm { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    .terminal-box { background: #08080a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 11px; color: #a3e635; max-height: 130px; overflow-y: auto; margin-top: 8px; }
+
+    /* Sidebar & Overlays */
+    .sidebar-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px); display: none; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+    .sidebar-overlay.active, .modal-overlay.active { display: block; opacity: 1; }
+
+    .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #121212; border-right: 1px solid #333; z-index: 1001; transition: left 0.3s; padding: 20px; display: flex; flex-direction: column; }
+    .sidebar.active { left: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+    .sidebar-menu button { color: #ccc; font-size: 13px; padding: 10px 12px; border-radius: 4px; background: transparent; border: none; text-align: left; cursor: pointer; width: 100%; }
+    .sidebar-menu button:hover, .sidebar-menu button.active { background: #222; color: #fff; }
+
+    /* Modals */
+    .kta-modal-wrapper, .form-modal-wrapper, .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -45%) scale(0.95); width: 90%; max-width: 440px; background: rgba(16, 16, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 22px; z-index: 10001; display: none; opacity: 0; transition: all 0.3s; }
+    .kta-modal-wrapper.active, .form-modal-wrapper.active, .custom-modal.active { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    /* Lightbox Modal */
+    .lightbox-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.92); z-index: 10002; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .lightbox-modal img { max-width: 90%; max-height: 85vh; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
+    .lightbox-close { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 28px; cursor: pointer; }
+
+    .pass-modal-header { text-align: center; margin-bottom: 18px; }
+    .pass-modal-header .lock-icon { width: 48px; height: 48px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 20px; color: #fff; }
+    .input-pass-wrapper { position: relative; margin-bottom: 12px; }
+    .input-pass-wrapper input { padding-right: 40px; text-align: center; }
+    .toggle-pass-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #888; cursor: pointer; }
+    .error-text { color: #ff5555; font-size: 11px; text-align: center; margin-bottom: 12px; display: none; }
+
+    .kta-card { background: rgba(8, 8, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 20px 18px 15px; margin-bottom: 16px; }
+    .kta-header { text-align: center; margin-bottom: 20px; }
+    .kta-body { display: flex; gap: 15px; margin-bottom: 18px; }
+    .profile-section { display: flex; flex-direction: column; align-items: center; width: 105px; }
+    .avatar-box { width: 100px; height: 100px; border-radius: 12px; overflow: hidden; border: 1px solid #333; background: #1a1a1a; margin-bottom: 8px; }
+    .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-change-photo { width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 10px; padding: 6px 0; border-radius: 6px; cursor: pointer; }
+    .info-section { flex: 1; display: flex; flex-direction: column; gap: 5px; font-size: 11px; justify-content: center; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; }
+    .info-label { color: #888; font-size: 10px; }
+    .info-value { color: #fff; font-weight: 700; cursor: default; }
+    .clickable-text { cursor: pointer; text-decoration: underline; color: #4ade80; }
+    .status-active { color: #4ade80; }
+    .kta-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
+
+    .badge-toggle-btn { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 4px; transition: background 0.2s; }
+    .badge-toggle-btn:hover { background: rgba(255,255,255,0.15); }
+    .badge-select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 140px; overflow-y: auto; padding: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 10px; margin-top: 6px; }
+    .badge-checkbox-item { display: flex; align-items: center; gap: 6px; color: #ccc; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s; }
+    .badge-checkbox-item:hover { background: rgba(255,255,255,0.05); }
+    .badge-checkbox-item.locked { opacity: 0.4; cursor: not-allowed; }
+
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
+    .input-control { width: 100%; background: #08080a; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; flex: 1; }
+    .btn-submit { background: #ffffff; color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; flex: 1; }
+    .btn-danger-confirm { background: #ef4444; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; flex: 1; }
+
+    /* Layar Pemeliharaan */
+    #maintenance-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; color: #fff; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; text-align: center; padding: 20px; }
+    #maintenance-screen i { font-size: 50px; color: #ef4444; margin-bottom: 16px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Layar Mode Maintenance -->
+  <div id="maintenance-screen">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <h2 style="letter-spacing: 2px; margin-bottom: 8px;">SYSTEM UNDER MAINTENANCE</h2>
+    <p style="color: #888; font-size: 13px; max-width: 400px; margin-bottom: 20px;">
+      Elcida Gallery sedang dalam pemeliharaan sistem. Silakan kembali lagi nanti.
+    </p>
+    <button class="btn-primary" onclick="openDevRoom()">Buka Developer Room</button>
+  </div>
+
+  <!-- Header Navigasi -->
+  <header>
+    <div class="header-left">
+      <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+      <h1>ELCIDA GALLERY</h1>
+    </div>
+    <div class="header-right">
+      <nav class="top-nav">
+        <button id="nav-index" class="active" onclick="switchTab('index')">Menu Utama</button>
+        <button id="nav-beranda" onclick="switchTab('beranda')">Beranda</button>
+        <button id="nav-galeri" onclick="switchTab('galeri')">Galeri Gambar</button>
+        <button id="nav-cerita" onclick="switchTab('cerita')">Cerita</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- TAB 1: MENU UTAMA -->
+    <section id="view-index">
+      <h2 class="page-title">MENU UTAMA ELCIDA</h2>
+      <div class="menu-grid">
+        <div class="menu-card" onclick="switchTab('beranda')">
+          <div class="menu-icon"><i class="fa-solid fa-house"></i></div>
+          <div class="menu-info">
+            <h3>Beranda</h3>
+            <p>Tampilan visual minimalis Elcida dengan poster karya</p>
+          </div>
+        </div>
+        <div class="menu-card" onclick="switchTab('galeri')">
+          <div class="menu-icon"><i class="fa-solid fa-image"></i></div>
+          <div class="menu-info">
+            <h3>Galeri Gambar</h3>
+            <p>Kumpulan karya gambar & artwork eksklusif Elcida</p>
+          </div>
+        </div>
+        <div class="menu-card" onclick="switchTab('cerita')">
+          <div class="menu-icon"><i class="fa-solid fa-book-open"></i></div>
+          <div class="menu-info">
+            <h3>Cerita & Tulisan</h3>
+            <p>Ruang untuk membagikan tulisan pendek dan inspirasi</p>
+          </div>
+        </div>
+        <div class="menu-card" onclick="openDevRoom()">
+          <div class="menu-icon"><i class="fa-solid fa-code"></i></div>
+          <div class="menu-info">
+            <h3>Developer Room</h3>
+            <p>Informasi pengembang dan kontrol sistem Elcida</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: BERANDA -->
+    <section id="view-beranda" class="hidden">
+      <h2 class="page-title">BERANDA ELCIDA</h2>
+      <div class="banner">
+        <div class="banner-content">
+          <h2>Dunia Monokrom Elcida</h2>
+          <p>Dalam kesederhanaan hitam dan putih, setiap karya menyimpan makna tersendiri. Ekspresi visual dan tulisan yang fungsional & estetis.</p>
+        </div>
+        <div class="banner-action">
+          <button class="btn-primary" onclick="openFormModal()">✏️ Tambah Karya</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: GALERI GAMBAR -->
+    <section id="view-galeri" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+        <h2 class="page-title" style="margin-bottom:0;">GALERI GAMBAR</h2>
+        <button class="btn-primary" onclick="openFormModal()"><i class="fa-solid fa-plus"></i> Tambah Karya</button>
+      </div>
+
+      <div class="filter-container">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-galeri" placeholder="Cari karya / penulis..." onkeyup="filterGallery()">
+        </div>
+        <select id="filter-cat-galeri" class="category-select" onchange="filterGallery()">
+          <option value="ALL">Semua Kategori</option>
+          <option value="Ilustrasi">Ilustrasi</option>
+          <option value="Fanart">Fanart</option>
+          <option value="Komik">Komik</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+
+      <div id="gallery-list" class="grid-gallery"></div>
+    </section>
+
+    <!-- TAB 4: CERITA -->
+    <section id="view-cerita" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+        <h2 class="page-title" style="margin-bottom:0;">CERITA & TULISAN</h2>
+        <button class="btn-primary" onclick="openFormModal()"><i class="fa-solid fa-pen"></i> Tambah Cerita</button>
+      </div>
+
+      <div class="filter-container">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-cerita" placeholder="Cari cerita / penulis..." onkeyup="filterStories()">
+        </div>
+        <select id="filter-cat-cerita" class="category-select" onchange="filterStories()">
+          <option value="ALL">Semua Kategori</option>
+          <option value="Cerpen">Cerpen</option>
+          <option value="Puisi">Puisi</option>
+          <option value="Catatan">Catatan</option>
+        </select>
+      </div>
+
+      <div id="story-list" class="grid-container"></div>
+    </section>
+
+    <!-- TAB 5: DEVELOPER ROOM -->
+    <section id="view-developer" class="hidden">
+      <h2 class="page-title">DEVELOPER CONTROL ROOM</h2>
+
+      <div class="dev-stats-grid">
+        <div class="dev-stat-card">
+          <div class="dev-stat-number" id="stat-gallery">0</div>
+          <div class="dev-stat-label">Total Artwork</div>
+        </div>
+        <div class="dev-stat-card">
+          <div class="dev-stat-number" id="stat-stories">0</div>
+          <div class="dev-stat-label">Total Cerita</div>
+        </div>
+        <div class="dev-stat-card">
+          <div class="dev-stat-number" id="stat-visits">0</div>
+          <div class="dev-stat-label">Total Kunjungan</div>
+        </div>
+        <div class="dev-stat-card">
+          <div class="dev-stat-number" id="stat-likes">0</div>
+          <div class="dev-stat-label">Total Likes</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:#fff; font-size:13px; margin-bottom:12px;"><i class="fa-solid fa-toggle-on"></i> Pengaturan Sistem & Akses</h3>
+        <div class="toggle-row">
+          <span style="font-size:12px; color:#ccc;">Mode Pemeliharaan (Maintenance)</span>
+          <label class="switch">
+            <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenanceMode()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" style="border-top:1px solid rgba(255,255,255,0.08); margin-top:8px; padding-top:10px;">
+          <span style="font-size:12px; color:#ccc;">Bypass Lock Lencana (Unlock All Badges)</span>
+          <label class="switch">
+            <input type="checkbox" id="bypassBadgesToggle" onchange="toggleBypassBadges()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:#fff; font-size:13px; margin-bottom:10px;"><i class="fa-solid fa-sliders"></i> System Control Panel</h3>
+        <div class="dev-action-grid">
+          <button class="btn-dev-action" onclick="openChangePassModal()"><i class="fa-solid fa-key"></i> Ubah Pass</button>
+          <button class="btn-dev-action" onclick="openExportModal()"><i class="fa-solid fa-download"></i> Export JSON</button>
+          <button class="btn-dev-action" onclick="document.getElementById('importInput').click()"><i class="fa-solid fa-upload"></i> Import Data</button>
+          <button class="btn-dev-action" onclick="openChangeRoleModal()"><i class="fa-solid fa-user-gear"></i> Ganti Role</button>
+          <button class="btn-dev-action btn-dev-danger" onclick="openResetModal()"><i class="fa-solid fa-trash"></i> Reset Data</button>
+        </div>
+        <input type="file" id="importInput" accept=".json" style="display:none;" onchange="importData(event)">
+      </div>
+
+      <div class="card">
+        <h3 style="color:#fff; font-size:13px; margin-bottom:8px;"><i class="fa-solid fa-database"></i> Database Inspector</h3>
+        <div class="db-table-wrapper">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th>Tipe</th>
+                <th>Judul</th>
+                <th>Penulis</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="db-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:#fff; font-size:13px; margin-bottom:6px;"><i class="fa-solid fa-terminal"></i> System Activity Logs</h3>
+        <div class="terminal-box" id="terminal-logs">
+          <div class="terminal-line"><span style="color:#666;">[SYSTEM]</span> Elcida Gallery initialized...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightboxImg" src="" alt="Full Preview">
+  </div>
+
+  <!-- Sidebar Overlay & Menu -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2 style="font-size:14px; color:#fff;">MENU ELCIDA</h2>
+      <button style="background:none; border:none; color:#aaa; font-size:22px; cursor:pointer;" onclick="toggleSidebar()">&times;</button>
+    </div>
+    <div class="sidebar-menu">
+      <button id="side-index" class="active" onclick="switchTab('index'); toggleSidebar();">📌 Menu Utama</button>
+      <button id="side-beranda" onclick="switchTab('beranda'); toggleSidebar();">🏠 Beranda</button>
+      <button id="side-galeri" onclick="switchTab('galeri'); toggleSidebar();">🖼️ Galeri Gambar</button>
+      <button id="side-cerita" onclick="switchTab('cerita'); toggleSidebar();">📖 Cerita</button>
+      <button id="side-developer" onclick="openDevRoom(); toggleSidebar();">🛠️ Developer Room</button>
+      <div style="height:1px; background:#333; margin:10px 0;"></div>
+      <button onclick="toggleSidebar(); openKtaModal();">💳 Profil Saya (KTA)</button>
+      <button id="discord-login-btn" class="btn-discord" onclick="loginWithDiscord()">
+        <i class="fa-brands fa-discord"></i> Login Discord
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
+
+  <!-- MODAL AUTH DEV -->
+  <div class="custom-modal" id="passModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3 style="font-size:15px; color:#fff;">AKSES DEVELOPER ROOM</h3>
+    </div>
+    <div class="form-group">
+      <div class="input-pass-wrapper">
+        <input type="password" id="dev-password-input" class="input-control" placeholder="• • • • • • • •" onkeyup="checkEnterKey(event)">
+        <button class="toggle-pass-btn" onclick="togglePassVisibility('dev-password-input', 'passIcon')"><i class="fa-regular fa-eye" id="passIcon"></i></button>
+      </div>
+      <p class="error-text" id="passError">Password salah!</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-submit" onclick="validatePassword()">Masuk</button>
+    </div>
+  </div>
+
+  <!-- MODAL UBAH PASSWORD -->
+  <div class="custom-modal" id="changePassModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon"><i class="fa-solid fa-key"></i></div>
+      <h3 style="font-size:15px; color:#fff;">UBAH PASSWORD ADMIN</h3>
+    </div>
+    <div class="form-group">
+      <label>PASSWORD BARU</label>
+      <input type="password" id="new-pass-input" class="input-control" placeholder="Password baru">
+    </div>
+    <div class="form-group">
+      <label>KONFIRMASI PASSWORD</label>
+      <input type="password" id="confirm-pass-input" class="input-control" placeholder="Ketik ulang password">
+      <p class="error-text" id="changePassError">Password tidak cocok!</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-submit" onclick="saveNewPassword()">Simpan</button>
+    </div>
+  </div>
+
+  <!-- MODAL GANTI ROLE -->
+  <div class="custom-modal" id="changeRoleModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon" style="color: #c084fc;"><i class="fa-solid fa-user-gear"></i></div>
+      <h3 style="font-size:15px; color:#fff;">GANTI ROLE PROFIL</h3>
+    </div>
+    <div class="form-group">
+      <label>PILIH PRESET ROLE</label>
+      <select id="role-select" class="input-control" onchange="syncRoleSelect(this.value)">
+        <option value="">-- Kustom Role --</option>
+        <option value="DEVELOPER">DEVELOPER</option>
+        <option value="ADMINISTRATOR">ADMINISTRATOR</option>
+        <option value="ANGGOTA">ANGGOTA</option>
+        <option value="MODERATOR">MODERATOR</option>
+        <option value="VIP MEMBER">VIP MEMBER</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>ROLE KUSTOM</label>
+      <input type="text" id="custom-role-input" class="input-control" placeholder="Ketik role...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-submit" onclick="saveNewRole()">Simpan Role</button>
+    </div>
+  </div>
+
+  <!-- MODAL EXPORT -->
+  <div class="custom-modal" id="exportModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon" style="color: #60a5fa;"><i class="fa-solid fa-file-export"></i></div>
+      <h3 style="font-size:15px; color:#fff;">EXPORT DATA SISTEM</h3>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-submit" onclick="confirmBackupData()">Unduh File</button>
+    </div>
+  </div>
+
+  <!-- MODAL RESET DATA -->
+  <div class="custom-modal" id="resetModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon" style="color: #f87171;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 style="font-size:15px; color:#f87171;">RESET SEMUA DATA?</h3>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-danger-confirm" onclick="confirmResetSystemData()">Hapus Semua</button>
+    </div>
+  </div>
+
+  <!-- MODAL NOTICE -->
+  <div class="custom-modal" id="noticeModal">
+    <div class="pass-modal-header">
+      <div class="lock-icon" id="noticeIcon"><i class="fa-solid fa-circle-info"></i></div>
+      <h3 id="noticeTitle" style="color:#fff;">NOTIFIKASI</h3>
+      <p id="noticeDesc" style="font-size:11px; color:#aaa; margin-top:4px;"></p>
+    </div>
+    <button class="btn-submit" style="width:100%;" onclick="closeAllModals()">OK</button>
+  </div>
+
+  <!-- MODAL KTA -->
+  <div class="kta-modal-wrapper" id="ktaModal">
+    <div class="kta-card">
+      <div class="kta-header">
+        <h2 style="font-size:15px; color:#fff;">KARTU TANDA ANGGOTA</h2>
+        <p style="font-size:10px; color:#888;">KOMUNITAS ELCIDA GALLERY</p>
+      </div>
+      <div class="kta-body">
+        <div class="profile-section">
+          <div class="avatar-box" id="avatarBox">
+            <svg id="profileImg" viewBox="0 0 100 100" style="width:100%; height:100%; background:#222;">
+              <circle cx="50" cy="40" r="20" fill="#555"/>
+              <path d="M20 90 C20 65, 80 65, 80 90 Z" fill="#555"/>
+            </svg>
+          </div>
+          <button class="btn-change-photo" onclick="document.getElementById('fileInput').click()">GANTI FOTO</button>
+          <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="previewImage(event)">
+        </div>
+        <div class="info-section">
+          <div class="info-row"><span class="info-label">NIK (ID)</span><span class="info-value" id="profileNik">ELC-000000</span></div>
+          <div class="info-row"><span class="info-label">NAMA</span><span class="info-value clickable-text" id="profileName" onclick="editName()">vervey</span></div>
+          <div class="info-row"><span class="info-label">STATUS</span><span class="info-value status-active">MEMBER AKTIF</span></div>
+          <div class="info-row"><span class="info-label">DOMISILI</span><span class="info-value">ELCIDA GALLERY</span></div>
+          <div class="info-row"><span class="info-label">BERLAKU</span><span class="info-value">SEUMUR HIDUP</span></div>
+          <div class="info-row"><span class="info-label">ROLE</span><span class="info-value status-active" id="profileRole">DEVELOPER</span></div>
+          
+          <div style="margin-top: 4px;">
+            <span class="info-label" style="display:block; margin-bottom:2px;">LENCANA / TITEL</span>
+            <div class="badge-wrapper" id="ktaBadgeContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <button type="button" class="badge-toggle-btn" onclick="toggleBadgeDropdown()">
+          <span><i class="fa-solid fa-award"></i> Pilih Lencana Saya</span>
+          <i class="fa-solid fa-chevron-down" id="badgeArrowIcon"></i>
+        </button>
+        <div class="badge-select-grid hidden" id="badgeSelectGrid"></div>
+      </div>
+
+      <div id="discordLogoutSection" style="display:none; margin-top:10px;">
+        <button class="btn-secondary" style="background:rgba(239, 68, 68, 0.2); border-color:#ef4444; color:#f87171; font-size:10px; width:100%; padding:6px;" onclick="logoutDiscord()">
+          <i class="fa-brands fa-discord"></i> Logout dari Discord
+        </button>
+      </div>
+
+      <div class="kta-footer" style="margin-top:10px;">
+        <span style="font-size:9px; color:#666;">ELCIDA OFFICIAL MEMBER CARD</span>
+        <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:10px; padding:4px 10px; border-radius:6px;">VERIFIED ✓</div>
+      </div>
+    </div>
+    <button class="btn-secondary" style="width:100%;" onclick="closeAllModals()">TUTUP</button>
+  </div>
+
+  <!-- MODAL FORM BUAT KARYA -->
+  <div class="form-modal-wrapper" id="formModal">
+    <h2 class="page-title" style="text-align:left; font-size:14px; margin-bottom:14px;">BUAT KARYA BARU</h2>
+    <div class="form-group">
+      <label>PILIH TIPE KARYA</label>
+      <select id="input-type" class="input-control" onchange="toggleFormFields()">
+        <option value="cerita">Cerita / Tulisan</option>
+        <option value="galeri">Galeri Gambar</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>KATEGORI KARYA</label>
+      <select id="input-category" class="input-control"></select>
+    </div>
+    <div class="form-group">
+      <label>JUDUL KARYA</label>
+      <input type="text" id="input-title" class="input-control" placeholder="Masukkan judul...">
+    </div>
+    <div class="form-group">
+      <label>DITERBITKAN OLEH</label>
+      <input type="text" id="input-author" class="input-control" placeholder="Nama pembuat...">
+    </div>
+    <div class="form-group hidden" id="group-image-url">
+      <label>PILIH GAMBAR (WATERMARK OTOMATIS)</label>
+      <button type="button" class="btn-secondary" style="width:100%; border-style:dashed; padding:12px;" onclick="document.getElementById('input-image-file').click()">
+        <i class="fa-solid fa-image"></i> Buka Galeri Foto
+      </button>
+      <input type="file" id="input-image-file" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+      <div id="image-preview-container" style="display:none; margin-top:10px; text-align:center;">
+        <img id="image-preview" src="" alt="Preview" style="max-width:100%; max-height:160px; border-radius:8px; object-fit:cover;">
+      </div>
+    </div>
+    <div class="form-group" id="group-content">
+      <label>ISI CERITA / DESKRIPSI</label>
+      <textarea id="input-content" class="input-control" rows="4" placeholder="Tuliskan cerita..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAllModals()">Batal</button>
+      <button class="btn-submit" onclick="submitWork()">Kirim Karya</button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // CONFIG DISCORD OAUTH2
+    // ==========================================
+    const DISCORD_CLIENT_ID = "1548214716868988961"; // Ganti dengan Client ID milikmu
+    const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname; // Otomatis URL websitemu saat ini
+
+    // ==========================================
+    // 1. VARIABLE GLOBAL & PERSISTENSI DATA
+    // ==========================================
+    let DEV_PASSWORD = localStorage.getItem('elcida_dev_pass') || "verveyadmin";
+    let isMaintenance = localStorage.getItem('elcida_maintenance') === 'true';
+    let isBypassBadges = localStorage.getItem('elcida_bypass_badges') === 'true';
+
+    let currentUserId = localStorage.getItem('elcida_user_id');
+    if (!currentUserId) {
+      currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('elcida_user_id', currentUserId);
+    }
+
+    let isLikeProcessing = false;
+
+    let galleryData = JSON.parse(localStorage.getItem('elcida_gallery')) || [];
+    let storyData = JSON.parse(localStorage.getItem('elcida_stories')) || [];
+    let logData = JSON.parse(localStorage.getItem('elcida_logs')) || [
+      `[${new Date().toLocaleTimeString('id-ID')}] System initialized...`
+    ];
+
+    let visitCount = parseInt(localStorage.getItem('elcida_visits') || "0") + 1;
+    localStorage.setItem('elcida_visits', visitCount.toString());
+
+    let uploadedBase64Image = "";
+    let isBadgeDropdownOpen = false;
+
+    const ALL_BADGES = [
+      { id: 'verified', name: 'Verified', icon: 'fa-solid fa-circle-check', class: 'badge-verified', title: 'Identitas Terverifikasi', defaultUnlocked: true },
+      { id: 'dev', name: 'Lead Dev', icon: 'fa-solid fa-code', class: 'badge-dev', title: 'Developer Pengembang Sistem' },
+      { id: 'admin_like', name: 'Admin Like', icon: 'fa-solid fa-shield-halved', class: 'badge-admin-like', title: 'Administrator Resmi' },
+      { id: 'vip', name: 'VIP Gold', icon: 'fa-solid fa-crown', class: 'badge-vip', title: 'Member Kehormatan VIP' },
+      { id: 'bug_hunter', name: 'Bug Hunter', icon: 'fa-solid fa-bug', class: 'badge-bug-hunter', title: 'Penemu & Pelapor Bug' },
+      { id: 'sultan_like', name: 'Sultan Like', icon: 'fa-solid fa-heart', class: 'badge-sultan-like', title: 'Penerima Suka Terbanyak' },
+      { id: 'top_commenter', name: 'Top Komentator', icon: 'fa-solid fa-comments', class: 'badge-top-commenter', title: 'Aktif Berinteraksi' },
+      { id: 'streak', name: '30D Streak', icon: 'fa-solid fa-fire', class: 'badge-streak', title: 'Login Kunjungan 30 Hari' },
+      { id: 'early_bird', name: 'Pioneer #100', icon: 'fa-solid fa-rocket', class: 'badge-early-bird', title: 'Anggota Generasi Awal' },
+      { id: 'creator_pro', name: 'Creator Pro', icon: 'fa-solid fa-wand-magic-sparkles', class: 'badge-creator-pro', title: 'Kreator Konten Terproduktif' }
+    ];
+
+    let myActiveBadges = JSON.parse(localStorage.getItem('elcida_my_badges')) || ['verified'];
+
+    // ==========================================
+    // LOGIKA INTEGRASI DISCORD LOGIN
+    // ==========================================
+    function loginWithDiscord() {
+      if (DISCORD_CLIENT_ID === "YOUR_DISCORD_CLIENT_ID") {
+        showNotice("KONFIGURASI DIPERLUKAN", "Silakan isi DISCORD_CLIENT_ID terlebih dahulu di dalam kode JavaScript!");
+        return;
+      }
+      const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify%20email`;
+      window.location.href = authUrl;
+    }
+
+    function checkDiscordCallback() {
+      // Menangkap Implicit Grant Access Token dari URL Fragment (#access_token=...)
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      const accessToken = fragment.get('access_token');
+
+      if (accessToken) {
+        addLog("Ditemukan token login Discord, memproses data profil...");
+        
+        fetch('https://discord.com/api/users/@me', {
+          headers: { authorization: `Bearer ${accessToken}` }
+        })
+        .then(res => res.json())
+        .then(userData => {
+          if (userData.id) {
+            const discordUsername = userData.global_name || userData.username;
+            const discordAvatar = userData.avatar 
+              ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
+              : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+            // Simpan profil Discord ke LocalStorage
+            localStorage.setItem('elcida_profile_name', discordUsername);
+            localStorage.setItem('elcida_profile_avatar', discordAvatar);
+            localStorage.setItem('elcida_discord_user', JSON.stringify(userData));
+
+            document.getElementById('profileName').innerText = discordUsername;
+            document.getElementById('avatarBox').innerHTML = `<img src="${discordAvatar}" alt="Foto Profil">`;
+            document.getElementById('profileNik').innerText = `DISCORD-${userData.id.slice(-6)}`;
+
+            addLog(`Login Discord Berhasil: ${discordUsername}`);
+            showNotice("LOGIN DISCORD BERHASIL", `Selamat datang kembali, ${discordUsername}!`);
+
+            // Bersihkan token dari URL bar
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            updateDiscordUI(true);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          addLog("Gagal mengambil data dari Discord API");
+        });
+      } else {
+        const savedDiscordUser = localStorage.getItem('elcida_discord_user');
+        if (savedDiscordUser) {
+          updateDiscordUI(true);
+        }
+      }
+    }
+
+    function updateDiscordUI(isLoggedIn) {
+      const loginBtn = document.getElementById('discord-login-btn');
+      const logoutSec = document.getElementById('discordLogoutSection');
+
+      if (isLoggedIn) {
+        if(loginBtn) loginBtn.style.display = 'none';
+        if(logoutSec) logoutSec.style.display = 'block';
+      } else {
+        if(loginBtn) loginBtn.style.display = 'flex';
+        if(logoutSec) logoutSec.style.display = 'none';
+      }
+    }
+
+    function logoutDiscord() {
+      localStorage.removeItem('elcida_discord_user');
+      localStorage.removeItem('elcida_profile_name');
+      localStorage.removeItem('elcida_profile_avatar');
+
+      document.getElementById('profileName').innerText = "vervey";
+      document.getElementById('avatarBox').innerHTML = `
+        <svg id="profileImg" viewBox="0 0 100 100" style="width:100%; height:100%; background:#222;">
+          <circle cx="50" cy="40" r="20" fill="#555"/>
+          <path d="M20 90 C20 65, 80 65, 80 90 Z" fill="#555"/>
+        </svg>`;
+      document.getElementById('profileNik').innerText = "ELC-000000";
+
+      updateDiscordUI(false);
+      addLog("User berhasil Logout dari Discord");
+      showNotice("LOGOUT", "Kamu telah berhasil logout dari Discord.");
+    }
+
+    // ==========================================
+    // 2. LOGGING & UTILITY FUNCTIONS
+    // ==========================================
+    function addLog(msg) {
+      const time = new Date().toLocaleTimeString('id-ID');
+      const logEntry = `[${time}] ${msg}`;
+      logData.push(logEntry);
+      localStorage.setItem('elcida_logs', JSON.stringify(logData));
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('terminal-logs');
+      if (!container) return;
+      container.innerHTML = logData.map(log => `<div class="terminal-line"><span style="color:#666;">[LOG]</span> ${log}</div>`).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function isBadgeUnlocked(badge) {
+      if (isBypassBadges) return true;
+      const userRole = (localStorage.getItem('elcida_profile_role') || 'DEVELOPER').toUpperCase();
+      if (userRole.includes('DEVELOPER') || userRole.includes('ADMIN')) return true;
+      if (badge.defaultUnlocked) return true;
+      return false;
+    }
+
+    function showNotice(title, desc, isSuccess = true) {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('noticeModal').classList.add('active');
+      document.getElementById('noticeTitle').innerText = title;
+      document.getElementById('noticeDesc').innerText = desc;
+    }
+
+    // ==========================================
+    // 3. MAINTENANCE & AUTH DEVELOPER CONTROL
+    // ==========================================
+    function checkMaintenance() {
+      const screen = document.getElementById('maintenance-screen');
+      const toggle = document.getElementById('maintenanceToggle');
+      if (toggle) toggle.checked = isMaintenance;
+      screen.style.display = isMaintenance ? 'flex' : 'none';
+    }
+
+    function toggleMaintenanceMode() {
+      isMaintenance = document.getElementById('maintenanceToggle').checked;
+      localStorage.setItem('elcida_maintenance', isMaintenance);
+      addLog(`Maintenance Mode ${isMaintenance ? 'ACTIVATED' : 'DEACTIVATED'}`);
+      checkMaintenance();
+    }
+
+    function toggleBypassBadges() {
+      isBypassBadges = document.getElementById('bypassBadgesToggle').checked;
+      localStorage.setItem('elcida_bypass_badges', isBypassBadges);
+      addLog(`Bypass Badges ${isBypassBadges ? 'ACTIVATED' : 'DEACTIVATED'}`);
+      renderKtaBadges();
+      renderBadgeSelector();
+    }
+
+    function openDevRoom() {
+      closeAllModals();
+      document.getElementById('maintenance-screen').style.display = 'none';
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('passModal').classList.add('active');
+      document.getElementById('dev-password-input').focus();
+    }
+
+    function validatePassword() {
+      const input = document.getElementById('dev-password-input').value;
+      if (input === DEV_PASSWORD) {
+        closeAllModals();
+        document.getElementById('maintenance-screen').style.display = 'none';
+        switchTab('developer');
+        updateDevStats();
+        renderDatabaseTable();
+        addLog("Akses Developer Room berhasil");
+      } else {
+        document.getElementById('passError').style.display = 'block';
+        addLog("Gagal login Developer Room: Password salah!");
+      }
+    }
+
+    function checkEnterKey(e) { if (e.key === 'Enter') validatePassword(); }
+
+    function togglePassVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-regular fa-eye';
+      }
+    }
+
+    function openChangePassModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('changePassModal').classList.add('active');
+    }
+
+    function saveNewPassword() {
+      const newP = document.getElementById('new-pass-input').value.trim();
+      const confirmP = document.getElementById('confirm-pass-input').value.trim();
+
+      if (!newP || newP !== confirmP) {
+        document.getElementById('changePassError').style.display = 'block';
+        return;
+      }
+
+      DEV_PASSWORD = newP;
+      localStorage.setItem('elcida_dev_pass', DEV_PASSWORD);
+      addLog("Password Admin berhasil diubah");
+      showNotice("SUKSES", "Password admin berhasil diperbarui!");
+    }
+
+    function openChangeRoleModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('changeRoleModal').classList.add('active');
+    }
+
+    function syncRoleSelect(val) {
+      if(val) document.getElementById('custom-role-input').value = val;
+    }
+
+    function saveNewRole() {
+      const newRole = document.getElementById('custom-role-input').value.trim();
+      if(!newRole) return;
+      const formattedRole = newRole.toUpperCase();
+      document.getElementById('profileRole').innerText = formattedRole;
+      localStorage.setItem('elcida_profile_role', formattedRole);
+      addLog(`Role Profil diubah ke ${formattedRole}`);
+      renderKtaBadges();
+      renderBadgeSelector();
+      showNotice("ROLE DIPERBARUI", `Role profil berhasil diubah ke ${formattedRole}`);
+    }
+
+    // ==========================================
+    // 4. EXPORT, IMPORT & RESET SYSTEM
+    // ==========================================
+    function openExportModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('exportModal').classList.add('active');
+    }
+
+    function confirmBackupData() {
+      const data = { gallery: galleryData, stories: storyData, badges: myActiveBadges, logs: logData };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `elcida_backup_${Date.now()}.json`;
+      a.click();
+      addLog("Export JSON backup diunduh");
+      showNotice("EXPORTS BERHASIL", "File backup JSON telah diunduh.");
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.gallery || data.stories) {
+            galleryData = data.gallery || [];
+            storyData = data.stories || [];
+            if(data.badges) {
+              myActiveBadges = data.badges;
+              localStorage.setItem('elcida_my_badges', JSON.stringify(myActiveBadges));
+            }
+            if(data.logs) {
+              logData = data.logs;
+              localStorage.setItem('elcida_logs', JSON.stringify(logData));
+            }
+            localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
+            localStorage.setItem('elcida_stories', JSON.stringify(storyData));
+            renderGallery();
+            renderStories();
+            renderKtaBadges();
+            updateDevStats();
+            renderDatabaseTable();
+            renderLogs();
+            addLog("Database berhasil dipulihkan via Import");
+            showNotice("IMPORT SUKSES", "Database berhasil dipulihkan.");
+          }
+        } catch (err) {
+          showNotice("ERROR FILE", "File JSON korup.", false);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function openResetModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('resetModal').classList.add('active');
+    }
+
+    function confirmResetSystemData() {
+      localStorage.removeItem('elcida_gallery');
+      localStorage.removeItem('elcida_stories');
+      localStorage.removeItem('elcida_logs');
+      galleryData = [];
+      storyData = [];
+      logData = [`[${new Date().toLocaleTimeString('id-ID')}] System Reset Completed.`];
+      localStorage.setItem('elcida_logs', JSON.stringify(logData));
+      renderGallery();
+      renderStories();
+      updateDevStats();
+      renderDatabaseTable();
+      renderLogs();
+      showNotice("RESET BERHASIL", "Seluruh data galeri & cerita dibersihkan.");
+    }
+
+    // ==========================================
+    // 5. DATABASE INSPECTOR & STATS
+    // ==========================================
+    function updateDevStats() {
+      document.getElementById('stat-gallery').innerText = galleryData.length;
+      document.getElementById('stat-stories').innerText = storyData.length;
+      document.getElementById('stat-visits').innerText = visitCount;
+
+      let totalLikes = 0;
+      galleryData.forEach(i => totalLikes += (i.likes || 0));
+      storyData.forEach(i => totalLikes += (i.likes || 0));
+      document.getElementById('stat-likes').innerText = totalLikes;
+                                                              }
+
+    function renderDatabaseTable() {
+      const tbody = document.getElementById('db-table-body');
+      tbody.innerHTML = '';
+
+      galleryData.forEach((item, index) => {
+        tbody.innerHTML += `<tr><td>[Galeri]</td><td>${item.title}</td><td>${item.author}</td><td><button class="btn-del-sm" onclick="deleteSingleItem('galeri', ${index})">Hapus</button></td></tr>`;
+      });
+
+      storyData.forEach((item, index) => {
+        tbody.innerHTML += `<tr><td>[Cerita]</td><td>${item.title}</td><td>${item.author}</td><td><button class="btn-del-sm" onclick="deleteSingleItem('cerita', ${index})">Hapus</button></td></tr>`;
+      });
+    }
+
+    function deleteSingleItem(type, index) {
+      if (type === 'galeri') {
+        const deletedTitle = galleryData[index].title;
+        galleryData.splice(index, 1);
+        localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
+        addLog(`Item galeri "${deletedTitle}" dihapus`);
+        renderGallery();
+      } else {
+        const deletedTitle = storyData[index].title;
+        storyData.splice(index, 1);
+        localStorage.setItem('elcida_stories', JSON.stringify(storyData));
+        addLog(`Item cerita "${deletedTitle}" dihapus`);
+        renderStories();
+      }
+      updateDevStats();
+      renderDatabaseTable();
+    }
+
+    // ==========================================
+    // 6. UI & NAVIGATION CONTROL
+    // ==========================================
+    function switchTab(tabName) {
+      const tabs = ['index', 'beranda', 'galeri', 'cerita', 'developer'];
+      tabs.forEach(tab => {
+        const view = document.getElementById(`view-${tab}`);
+        const navBtn = document.getElementById(`nav-${tab}`);
+        const sideBtn = document.getElementById(`side-${tab}`);
+
+        if (tab === tabName) {
+          if (view) view.classList.remove('hidden');
+          if (navBtn) navBtn.classList.add('active');
+          if (sideBtn) sideBtn.classList.add('active');
+        } else {
+          if (view) view.classList.add('hidden');
+          if (navBtn) navBtn.classList.remove('active');
+          if (sideBtn) sideBtn.classList.remove('active');
+        }
+      });
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function openFormModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('formModal').classList.add('active');
+      document.getElementById('input-author').value = document.getElementById('profileName').innerText;
+      toggleFormFields();
+    }
+
+    function openKtaModal() {
+      closeAllModals();
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('ktaModal').classList.add('active');
+      renderKtaBadges();
+      renderBadgeSelector();
+    }
+
+    function closeAllModals() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.getElementById('formModal').classList.remove('active');
+      document.getElementById('ktaModal').classList.remove('active');
+      document.getElementById('passModal').classList.remove('active');
+      document.getElementById('changePassModal').classList.remove('active');
+      document.getElementById('changeRoleModal').classList.remove('active');
+      document.getElementById('exportModal').classList.remove('active');
+      document.getElementById('resetModal').classList.remove('active');
+      document.getElementById('noticeModal').classList.remove('active');
+
+      if (isMaintenance && document.getElementById('view-developer').classList.contains('hidden')) {
+        checkMaintenance();
+      }
+    }
+
+    function toggleFormFields() {
+      const type = document.getElementById('input-type').value;
+      const groupImg = document.getElementById('group-image-url');
+      const catSelect = document.getElementById('input-category');
+
+      if (type === 'galeri') {
+        groupImg.classList.remove('hidden');
+        catSelect.innerHTML = `<option value="Ilustrasi">Ilustrasi</option><option value="Fanart">Fanart</option><option value="Komik">Komik</option><option value="Lainnya">Lainnya</option>`;
+      } else {
+        groupImg.classList.add('hidden');
+        catSelect.innerHTML = `<option value="Cerpen">Cerpen</option><option value="Puisi">Puisi</option><option value="Catatan">Catatan</option>`;
+      }
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0);
+
+            const fontSize = Math.max(16, Math.floor(img.width / 25));
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+            ctx.textAlign = "right";
+            ctx.fillText("ELCIDA GALLERY", img.width - 20, img.height - 20);
+
+            uploadedBase64Image = canvas.toDataURL('image/jpeg', 0.85);
+            document.getElementById('image-preview').src = uploadedBase64Image;
+            document.getElementById('image-preview-container').style.display = 'block';
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function editName() {
+      const current = document.getElementById('profileName').innerText;
+      const newName = prompt('Ubah Nama Profil:', current);
+      if (newName) {
+        document.getElementById('profileName').innerText = newName;
+        localStorage.setItem('elcida_profile_name', newName);
+        addLog(`Nama Profil diubah ke ${newName}`);
+      }
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('avatarBox').innerHTML = `<img src="${e.target.result}" alt="Foto Profil">`;
+          localStorage.setItem('elcida_profile_avatar', e.target.result);
+          addLog("Foto Profil KTA diperbarui");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function generateBadgesHTML(badgeIdList) {
+      if (!badgeIdList || badgeIdList.length === 0) return '';
+      return badgeIdList.map(id => {
+        const b = ALL_BADGES.find(x => x.id === id);
+        if (!b) return '';
+        return `<span class="badge-item ${b.class}" title="${b.title}"><i class="${b.icon}"></i> ${b.name}</span>`;
+      }).join('');
+    }
+
+    function renderKtaBadges() {
+      const container = document.getElementById('ktaBadgeContainer');
+      container.innerHTML = generateBadgesHTML(myActiveBadges);
+    }
+
+    function toggleBadgeDropdown() {
+      isBadgeDropdownOpen = !isBadgeDropdownOpen;
+      const grid = document.getElementById('badgeSelectGrid');
+      const arrow = document.getElementById('badgeArrowIcon');
+
+      if (isBadgeDropdownOpen) {
+        grid.classList.remove('hidden');
+        arrow.className = 'fa-solid fa-chevron-up';
+      } else {
+        grid.classList.add('hidden');
+        arrow.className = 'fa-solid fa-chevron-down';
+      }
+    }
+
+    function renderBadgeSelector() {
+      const grid = document.getElementById('badgeSelectGrid');
+      grid.innerHTML = ALL_BADGES.map(b => {
+        const unlocked = isBadgeUnlocked(b);
+        const isChecked = myActiveBadges.includes(b.id) ? 'checked' : '';
+        
+        if (unlocked) {
+          return `
+            <label class="badge-checkbox-item">
+              <input type="checkbox" value="${b.id}" ${isChecked} onchange="toggleProfileBadge('${b.id}')">
+              <span><i class="${b.icon}"></i> ${b.name}</span>
+            </label>
+          `;
+        } else {
+          return `
+            <div class="badge-checkbox-item locked" title="Selesaikan misi terlebih dahulu untuk membuka lencana ini!">
+              <i class="fa-solid fa-lock" style="color:#888;"></i>
+              <span style="color:#777; text-decoration:line-through;"><i class="${b.icon}"></i> ${b.name}</span>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function toggleProfileBadge(badgeId) {
+      const badge = ALL_BADGES.find(x => x.id === badgeId);
+      if (!badge || !isBadgeUnlocked(badge)) return;
+
+      if (myActiveBadges.includes(badgeId)) {
+        myActiveBadges = myActiveBadges.filter(id => id !== badgeId);
+      } else {
+        myActiveBadges.push(badgeId);
+      }
+      localStorage.setItem('elcida_my_badges', JSON.stringify(myActiveBadges));
+      renderKtaBadges();
+    }
+
+    // ==========================================
+    // 7. PUBLIKASI KARYA & INTERAKSI
+    // ==========================================
+    function submitWork() {
+      const type = document.getElementById('input-type').value;
+      const category = document.getElementById('input-category').value;
+      const title = document.getElementById('input-title').value.trim();
+      const author = document.getElementById('input-author').value.trim() || 'Anonim';
+      const role = document.getElementById('profileRole').innerText;
+      const content = document.getElementById('input-content').value.trim();
+
+      if (!title) { showNotice("ERROR", "Judul karya harus diisi!", false); return; }
+
+      if (type === 'galeri') {
+        if (!uploadedBase64Image) { showNotice("ERROR", "Pilih foto dari galeri terlebih dahulu!", false); return; }
+        galleryData.unshift({ 
+          id: Date.now(), 
+          title, 
+          category, 
+          author, 
+          role, 
+          badges: [...myActiveBadges], 
+          image: uploadedBase64Image, 
+          desc: content, 
+          likes: 0, 
+          userLikes: [], 
+          views: 0 
+        });
+        localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
+        addLog(`Artwork baru diterbitkan: "${title}" oleh ${author}`);
+        renderGallery();
+        switchTab('galeri');
+      } else {
+        if (!content) { showNotice("ERROR", "Isi cerita tidak boleh kosong!", false); return; }
+        storyData.unshift({ 
+          id: Date.now(), 
+          title, 
+          category, 
+          author, 
+          role, 
+          badges: [...myActiveBadges], 
+          content, 
+          likes: 0, 
+          userLikes: [], 
+          views: 0 
+        });
+        localStorage.setItem('elcida_stories', JSON.stringify(storyData));
+        addLog(`Cerita baru diterbitkan: "${title}" oleh ${author}`);
+        renderStories();
+        switchTab('cerita');
+      }
+
+      document.getElementById('input-title').value = '';
+      document.getElementById('input-content').value = '';
+      uploadedBase64Image = "";
+      closeAllModals();
+    }
+
+    function toggleLike(type, id) {
+      if (isLikeProcessing) return;
+      isLikeProcessing = true;
+
+      let list = type === 'galeri' ? galleryData : storyData;
+      let item = list.find(x => x.id === id);
+
+      if (item) {
+        if (!item.userLikes) item.userLikes = [];
+
+        const userIndex = item.userLikes.indexOf(currentUserId);
+
+        if (userIndex === -1) {
+          item.userLikes.push(currentUserId);
+          item.likes = item.userLikes.length;
+        } else {
+          item.userLikes.splice(userIndex, 1);
+          item.likes = item.userLikes.length;
+        }
+
+        localStorage.setItem(`elcida_${type === 'galeri' ? 'gallery' : 'stories'}`, JSON.stringify(list));
+        
+        if (type === 'galeri') renderGallery(); else renderStories();
+      }
+
+      setTimeout(() => {
+        isLikeProcessing = false;
+      }, 250);
+    }
+
+    function openLightbox(imgSrc, id) {
+      document.getElementById('lightboxImg').src = imgSrc;
+      document.getElementById('lightboxModal').style.display = 'flex';
+      
+      let item = galleryData.find(x => x.id === id);
+      if (item) {
+        item.views = (item.views || 0) + 1;
+        localStorage.setItem('elcida_gallery', JSON.stringify(galleryData));
+        renderGallery();
+      }
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').style.display = 'none';
+    }
+
+    function copyShareLink(title) {
+      navigator.clipboard.writeText(window.location.href);
+      showNotice("BERHASIL", `Tautan untuk karya "${title}" telah disalin!`);
+    }
+
+    function filterGallery() {
+      const query = document.getElementById('search-galeri').value.toLowerCase();
+      const cat = document.getElementById('filter-cat-galeri').value;
+      const filtered = galleryData.filter(item => {
+        const matchesQuery = item.title.toLowerCase().includes(query) || item.author.toLowerCase().includes(query);
+        const matchesCat = cat === 'ALL' || item.category === cat;
+        return matchesQuery && matchesCat;
+      });
+      renderGallery(filtered);
+    }
+
+    function filterStories() {
+      const query = document.getElementById('search-cerita').value.toLowerCase();
+      const cat = document.getElementById('filter-cat-cerita').value;
+      const filtered = storyData.filter(item => {
+        const matchesQuery = item.title.toLowerCase().includes(query) || item.author.toLowerCase().includes(query);
+        const matchesCat = cat === 'ALL' || item.category === cat;
+        return matchesQuery && matchesCat;
+      });
+      renderStories(filtered);
+    }
+
+    function renderGallery(data = galleryData) {
+      const container = document.getElementById('gallery-list');
+      if (data.length === 0) {
+        container.innerHTML = `<p style="color:#666; font-size:12px;">Tidak ada artwork ditemukan.</p>`;
+        return;
+      }
+      container.innerHTML = data.map(item => {
+        const isLiked = item.userLikes && item.userLikes.includes(currentUserId);
+        return `
+          <div class="gallery-card">
+            <img src="${item.image}" alt="${item.title}" onclick="openLightbox('${item.image}', ${item.id})">
+            <h3 class="card-title">${item.title}</h3>
+            <div class="publisher-info">
+              <span class="author-name">${item.author}</span>
+              <span class="badge-role">${item.role}</span>
+              ${item.category ? `<span class="badge-cat">${item.category}</span>` : ''}
+            </div>
+            <div class="badge-wrapper">
+              ${generateBadgesHTML(item.badges || [])}
+            </div>
+            ${item.desc ? `<p class="card-body">${item.desc}</p>` : ''}
+            <div class="card-actions">
+              <div class="action-group">
+                <button class="btn-action ${isLiked ? 'liked' : ''}" onclick="toggleLike('galeri', ${item.id})">
+                  <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${item.likes || 0}
+                </button>
+                <span><i class="fa-solid fa-eye"></i> ${item.views || 0}</span>
+              </div>
+              <button class="btn-action" onclick="copyShareLink('${item.title}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderStories(data = storyData) {
+      const container = document.getElementById('story-list');
+      if (data.length === 0) {
+        container.innerHTML = `<p style="color:#666; font-size:12px;">Tidak ada cerita ditemukan.</p>`;
+        return;
+      }
+      container.innerHTML = data.map(item => {
+        const isLiked = item.userLikes && item.userLikes.includes(currentUserId);
+        return `
+          <div class="card">
+            <h3 class="card-title">${item.title}</h3>
+            <div class="publisher-info">
+              <span class="author-name">${item.author}</span>
+              <span class="badge-role">${item.role}</span>
+              ${item.category ? `<span class="badge-cat">${item.category}</span>` : ''}
+            </div>
+            <div class="badge-wrapper">
+              ${generateBadgesHTML(item.badges || [])}
+            </div>
+            <p class="card-body">${item.content}</p>
+            <div class="card-actions">
+              <div class="action-group">
+                <button class="btn-action ${isLiked ? 'liked' : ''}" onclick="toggleLike('cerita', ${item.id})">
+                  <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${item.likes || 0}
+                </button>
+              </div>
+              <button class="btn-action" onclick="copyShareLink('${item.title}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadProfile() {
+      const savedName = localStorage.getItem('elcida_profile_name');
+      const savedRole = localStorage.getItem('elcida_profile_role');
+      const savedAvatar = localStorage.getItem('elcida_profile_avatar');
+
+      if (savedName) document.getElementById('profileName').innerText = savedName;
+      if (savedRole) document.getElementById('profileRole').innerText = savedRole;
+      if (savedAvatar) document.getElementById('avatarBox').innerHTML = `<img src="${savedAvatar}" alt="Foto Profil">`;
+      
+      const bypassToggle = document.getElementById('bypassBadgesToggle');
+      if (bypassToggle) bypassToggle.checked = isBypassBadges;
+
+      renderKtaBadges();
+    }
+
+    // ==========================================
+    // 8. INITIALIZATION AT LAUNCH
+    // ==========================================
+    window.onload = function() {
+      checkMaintenance();
+      loadProfile();
+      checkDiscordCallback();
+      renderGallery();
+      renderStories();
+      renderLogs();
+    };
+  </script>
+</body>
+</html>
